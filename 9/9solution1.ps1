@@ -1,21 +1,13 @@
- #Get-NextValue
-    #Base Case = all zeros : return 0 else return Get-Nex
-
-#Get-Differences
-    #Base Case = all zeros : return $Differences else; $Differnces += Get-Differneces($input)
-
-
 function Get-Differences {
     param (
         [Parameter(Mandatory)]
         [bigint[]] $List
     )
 
-    $Difference = @()# [System.Collections.Generic.List[bigint]]::New()
-    $Differences = @()#[System.Collections.Generic.List[bigint[]]]::New()
+    $Difference = [System.Collections.Generic.List[bigint]]::New()
 
     #Base Case: difference contains only zeros
-    if ((($List | select -Unique).length -eq 1) -and (($List | select -Unique) -eq 0))
+    if ((($List | Select-Object -Unique).length -eq 1) -and (($List | Select-Object -Unique) -eq 0))
     {
         return
     }
@@ -25,9 +17,7 @@ function Get-Differences {
         $Difference += $List[$i] - $List[$i -1]
     }
 
-    $Differences = $(Get-Differences -List $Difference)
-
-    return $Differences + ,$Difference
+    return $(Get-Differences -List $Difference) + ,$Difference
 }
 
 $InputFile = Get-Content $PSScriptRoot\input.txt
@@ -41,13 +31,14 @@ foreach ($Line in $InputFile)
     $a = Get-Differences -List $List
     $a +=  ,$List 
 
-    $next = 0 
+    $Next = 0 
     for ($i=1; $i -lt $a.Length; $i++)
     {
-        $next = $a[$i][$a[$i].length -1] + $next
-        Write-Host "$($a[$i]) - $next"
+        $Next = $a[$i][$a[$i].length -1] + $Next
+        Write-Host "$($a[$i]) - $Next"
     }
-    $total += $next
 
+    $Total += $Next
 }
 
+$Total
