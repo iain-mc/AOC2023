@@ -39,10 +39,65 @@ Class Hand : IComparable
 
 }
 
+function Get-MostCommon {
+    param (
+        [Parameter(Mandatory)]
+        [Char[]] $List
+    )
+        
+    $mostCommon = 0
+    $n = 0
+    for ($i=0; $i -lt $List.Length; $i++)
+    {
+        $Same = 0
+        for ($j=0; $j -lt $List.Length; $j++)
+        {
+            if ($i -eq $j)
+            {
+                continue
+            }
+
+            if ($list[$i] -eq $List[$j])
+            {
+                $same++
+            }
+        }
+        if($Same -gt $n)
+        {
+            $n = $Same
+            $MostCommon = $i
+        }
+    }
+
+    return $List[$MostCommon]
+}
+function Optimise-Cards {
+    param (
+        [Parameter(Mandatory)]
+        [Char[]] $Cards
+    )
+    
+    $MostCommon = Get-MostCommon -List $Cards
+
+    if ($MostCommon -eq "J") 
+    {
+        if(($( $Cards | ?{$_ -ne "J"})).Length)
+        {
+            $MostCommon = Get-MostCommon $($Cards | ?{$_ -ne "J"})
+        }
+        else 
+        {
+            $MostCommon = "A"
+        }
+    }
+
+    return $Cards -replace "J",$MostCommon   
+}
+
 function Get-HandType {
     param (
         [Parameter(Mandatory)]
-        [Int[]] $Cards
+        [Char[]] $Cards
     )
 
     $Cards = $Cards | Sort-Object
@@ -65,11 +120,11 @@ foreach ($Line in $InputFile)
 {
     $Cards, $Bid = $Line -split "\s+"
 
-    $HandType = Get-HandType -Cards $Cards.ToCharArray()
+    $HandType = Get-HandType -Cards $(Optimise-Cards -Cards $Cards).ToCharArray()
 
     $Cards = $Cards -replace ""," "
     $Cards = $Cards -replace "T","10"
-    $Cards = $Cards -replace "J","11"
+    $Cards = $Cards -replace "J","1"
     $Cards = $Cards -replace "Q","12"
     $Cards = $Cards -replace "K","13"
     $Cards = $Cards -replace "A","14"
@@ -84,8 +139,6 @@ foreach ($Line in $InputFile)
 $Total = 0
  
 $Hands = $Hands | Sort-Object
-
-$hands 
 
 for ($i=0; $i -lt $Hands.Length; $i++)
 {
