@@ -28,14 +28,13 @@ foreach ($Line in $InputFile)
     $List = [System.Collections.Generic.List[bigint]]::New()
     [bigint[]]$List = $Line -split '\s+'
 
-    $a = Get-Differences -List $List
+    $a = Get-Differences -List $List #Boring Array 
     $a +=  ,$List 
 
     $Next = 0 
     for ($i=1; $i -lt $a.Length; $i++)
     {
         $Next = $a[$i][$a[$i].length -1] + $Next
-        Write-Host "$($a[$i]) - $Next"
     }
 
     $Total += $Next
